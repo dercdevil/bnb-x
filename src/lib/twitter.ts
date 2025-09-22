@@ -40,6 +40,13 @@ export const getTweetEmbedUrl = (tweetId: string): string => {
   return `https://publish.twitter.com/oembed?url=https://x.com/user/status/${tweetId}`;
 };
 
+/**
+ * Valida el contenido del tweet usando oEmbed público (sin API keys)
+ * - Extrae el username del autor del tweet
+ * - Verifica que contenga la wallet address
+ * - Verifica que mencione "tokenización"
+ * - Verifica que incluya el enlace a tokenizados.net
+ */
 export const validateTweetContent = async (
   tweetUrl: string,
   walletAddress: string

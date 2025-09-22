@@ -54,26 +54,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar si el wallet ya participó
-    const existingUserByWallet = await firebaseService.getUserByWallet(
-      walletAddress
-    );
-    if (existingUserByWallet) {
-      return NextResponse.json(
-        { error: "This wallet has already participated in the campaign" },
-        { status: 400 }
-      );
-    }
-
-    // Verificar si el tweet ya fue usado
-    const existingUserByTweet = await firebaseService.getUserByTweetId(tweetId);
-    if (existingUserByTweet) {
-      return NextResponse.json(
-        { error: "This tweet has already been used by another user" },
-        { status: 400 }
-      );
-    }
-
     // Verificar que el tweet contenga los elementos requeridos usando oEmbed (sin API key)
     const validationResult = await validateTweetContent(
       tweetUrl,
@@ -89,6 +69,26 @@ export async function POST(request: NextRequest) {
           username: validationResult.username,
           warning:
             "Si crees que esto es un error, el administrador puede revisar manualmente tu tweet.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Verificar elegibilidad completa (wallet, tweet y username únicos)
+    const eligibilityCheck = await firebaseService.checkUserEligibility(
+      walletAddress,
+      tweetId,
+      validationResult.username
+    );
+
+    if (!eligibilityCheck.isEligible) {
+      return NextResponse.json(
+        {
+          error: eligibilityCheck.error,
+          details:
+            "Solo se permite una participación por wallet, tweet o usuario de X",
+          conflictType: eligibilityCheck.conflictType,
+          username: validationResult.username,
         },
         { status: 400 }
       );

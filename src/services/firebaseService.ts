@@ -73,6 +73,77 @@ export class FirebaseService {
     }
   }
 
+  async getUserByUsername(username: string): Promise<User | null> {
+    try {
+      const q = query(
+        collection(db, this.usersCollection),
+        where("tweetUsername", "==", username)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) return null;
+
+      const doc = querySnapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data(),
+      } as User;
+    } catch (error) {
+      console.error("Error getting user by username:", error);
+      throw error;
+    }
+  }
+
+  // Validación completa para evitar duplicados
+  async checkUserEligibility(
+    walletAddress: string,
+    tweetId: string,
+    username?: string
+  ): Promise<{
+    isEligible: boolean;
+    error?: string;
+    conflictType?: "wallet" | "tweet" | "username";
+  }> {
+    try {
+      // Verificar wallet
+      const existingWallet = await this.getUserByWallet(walletAddress);
+      if (existingWallet) {
+        return {
+          isEligible: false,
+          error: "Esta wallet ya participó en la campaña",
+          conflictType: "wallet",
+        };
+      }
+
+      // Verificar tweet
+      const existingTweet = await this.getUserByTweetId(tweetId);
+      if (existingTweet) {
+        return {
+          isEligible: false,
+          error: "Este tweet ya fue usado por otro usuario",
+          conflictType: "tweet",
+        };
+      }
+
+      // Verificar username (si está disponible)
+      if (username) {
+        const existingUsername = await this.getUserByUsername(username);
+        if (existingUsername) {
+          return {
+            isEligible: false,
+            error: `El usuario @${username} ya participó en la campaña`,
+            conflictType: "username",
+          };
+        }
+      }
+
+      return { isEligible: true };
+    } catch (error) {
+      console.error("Error checking user eligibility:", error);
+      throw error;
+    }
+  }
+
   async updateUserStatus(
     userId: string,
     status: User["status"],
