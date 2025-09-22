@@ -1,103 +1,303 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import WalletForm from "@/components/WalletForm";
+import TweetVerification from "@/components/TweetVerification";
+import CampaignStatus from "@/components/CampaignStatus";
+import { Campaign } from "@/types";
+import { ExternalLink } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [currentStep, setCurrentStep] = useState<"wallet" | "tweet">("wallet");
+  const [wallet, setWallet] = useState("");
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCampaign, setIsLoadingCampaign] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    fetchCampaignInfo();
+  }, []);
+
+  const fetchCampaignInfo = async () => {
+    try {
+      const response = await fetch("/api/campaign");
+      const data = await response.json();
+      setCampaign(data);
+    } catch (error) {
+      console.error("Error fetching campaign:", error);
+      toast.error("Error loading campaign information");
+    } finally {
+      setIsLoadingCampaign(false);
+    }
+  };
+
+  const handleWalletSubmit = (walletAddress: string) => {
+    setWallet(walletAddress);
+    setCurrentStep("tweet");
+  };
+
+  const handleTweetSubmit = async (tweetUrl: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/verify-tweet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          walletAddress: wallet,
+          tweetUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("¡Tweet verificado y BNB enviado exitosamente!");
+        // Actualizar información de la campaña
+        await fetchCampaignInfo();
+        // Resetear formulario
+        setCurrentStep("wallet");
+        setWallet("");
+      } else {
+        toast.error(data.error || "Error verifying tweet");
+      }
+    } catch (error) {
+      console.error("Error submitting tweet:", error);
+      toast.error("Error de conexión. Inténtalo de nuevo.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackToWallet = () => {
+    setCurrentStep("wallet");
+    setWallet("");
+  };
+
+  const isCampaignActive =
+    campaign?.isActive && campaign?.currentUsers < campaign?.maxUsers;
+
+  if (isLoadingCampaign) {
+    return (
+      <div
+        className="min-h-screen relative flex items-center justify-center"
+        style={{
+          backgroundImage: "url('/grabacion.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative z-10 text-center bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-2xl p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-400 mx-auto mb-4"></div>
+          <p className="text-white">Cargando campaña...</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: "url('/grabacion.webp')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Overlay para mejorar legibilidad */}
+      <div className="absolute inset-0 bg-black/20"></div>
+
+      <div className="relative z-10">
+        <Toaster position="top-right" />
+
+        {/* Header */}
+        <header className="bg-black/10 backdrop-blur-sm border-b border-white/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/tokenizado-logo.webp"
+                  alt="Tokenizados Logo"
+                  className="w-10 h-10 rounded-lg"
+                />
+                <div>
+                  <h1 className="text-xl font-bold text-white">
+                    Campaña BNB x Tokenizados
+                  </h1>
+                  <p className="text-sm text-green-200">
+                    Publica en X y gana 0.005 BNB
+                  </p>
+                </div>
+              </div>
+              <a
+                href="/admin"
+                className="flex items-center gap-2 text-green-200 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg"
+              >
+                <span className="text-sm">Admin</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="text-center py-20">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              Bienvenido a la Campaña
+            </h1>
+            <h2 className="text-3xl md:text-4xl font-bold text-green-400 mb-8">
+              BNB x Tokenizados
+            </h2>
+            <p className="text-xl text-green-200 mb-12 max-w-2xl mx-auto">
+              Publica en X sobre Tokenizados y gana 0.005 BNB. Solo para los
+              primeros 5 usuarios.
+            </p>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+            {/* Campaign Status */}
+            {campaign && (
+              <CampaignStatus
+                currentUsers={campaign.currentUsers}
+                maxUsers={campaign.maxUsers}
+                rewardAmount={campaign.rewardAmount}
+                isActive={isCampaignActive || false}
+              />
+            )}
+
+            {/* Main Form */}
+            <div className="flex-1 max-w-md">
+              {currentStep === "wallet" ? (
+                <WalletForm
+                  onWalletSubmit={handleWalletSubmit}
+                  isDisabled={!isCampaignActive}
+                />
+              ) : (
+                <TweetVerification
+                  wallet={wallet}
+                  onTweetSubmit={handleTweetSubmit}
+                  isLoading={isLoading}
+                  isDisabled={!isCampaignActive}
+                />
+              )}
+
+              {currentStep === "tweet" && (
+                <button
+                  onClick={handleBackToWallet}
+                  className="mt-4 w-full text-center text-sm text-green-200 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg"
+                >
+                  ← Volver a ingresar wallet
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Info Section */}
+          <div className="mt-16 max-w-4xl mx-auto">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-2xl p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Sobre Tokenizados
+                </h2>
+                <p className="text-green-200 max-w-2xl mx-auto">
+                  Tu portal de información sobre tokenización y blockchain.
+                  Mantente al día con las últimas novedades del mundo Web3 con
+                  contenido verificado y análisis profundos de expertos en la
+                  industria.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="bg-green-500/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 border border-green-400/30">
+                    <span className="text-green-400 font-bold text-xl">✓</span>
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">
+                    100% Garantizado
+                  </h3>
+                  <p className="text-sm text-green-200">
+                    Información verificada y confiable sobre blockchain
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <div className="bg-green-500/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 border border-green-400/30">
+                    <span className="text-green-400 font-bold text-xl">📚</span>
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">
+                    Contenido Confiable
+                  </h3>
+                  <p className="text-sm text-green-200">
+                    Análisis profundos de expertos en la industria
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <div className="bg-green-500/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3 border border-green-400/30">
+                    <span className="text-green-400 font-bold text-xl">⚡</span>
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">
+                    Acceso Rápido
+                  </h3>
+                  <p className="text-sm text-green-200">
+                    Encuentra información actualizada de forma eficiente
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-center mt-8">
+                <a
+                  href="https://tokenizados.net"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  Ver artículos
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-black/20 backdrop-blur-sm border-t border-white/10 py-8 mt-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/tokenizado-logo.webp"
+                alt="Tokenizados Logo"
+                className="w-8 h-8 rounded"
+              />
+              <span className="text-white font-semibold">Tokenizados</span>
+            </div>
+            <p className="text-green-200">
+              © 2025 Campaña BNB x Tokenizados. Desarrollado para promover{" "}
+              <a
+                href="https://tokenizados.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-400 hover:text-green-300 transition-colors font-medium"
+              >
+                Tokenizados.net
+              </a>
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
