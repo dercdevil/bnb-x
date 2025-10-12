@@ -52,7 +52,7 @@ export default function CampaignStatus({
             <Gift className="w-5 h-5" />
             <span className="font-medium">Recompensa</span>
           </div>
-          <span className="text-xl font-bold">{rewardAmount} BNB</span>
+          <span className="text-xl font-bold">{rewardAmount} USDT</span>
         </div>
 
         <div className="flex items-center justify-between">

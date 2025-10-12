@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FirebaseService } from "@/services/firebaseService";
-import { sendBNB } from "@/lib/web3";
+import { sendUSDT } from "@/lib/web3";
 import { validateWalletAddress } from "@/lib/web3";
 import {
   validateTweetUrl,
@@ -104,8 +104,8 @@ export async function POST(request: NextRequest) {
     });
 
     try {
-      // Enviar BNB
-      const txHash = await sendBNB(walletAddress, campaign.rewardAmount);
+      // Enviar USDT
+      const txHash = await sendUSDT(walletAddress, campaign.rewardAmount);
 
       // Actualizar estado del usuario y campaña
       await firebaseService.updateUserStatus(userId, "rewarded", txHash);
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: "Tweet verified and BNB sent successfully!",
+        message: "Tweet verified and USDT sent successfully!",
         txHash,
         userId,
       });
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Tweet verified but BNB transfer failed. Please contact support.",
+            "Tweet verified but USDT transfer failed. Please contact support.",
           userId,
         },
         { status: 500 }

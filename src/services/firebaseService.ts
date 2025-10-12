@@ -14,8 +14,8 @@ import { db } from "@/lib/firebase";
 import { User, Campaign } from "@/types";
 
 export class FirebaseService {
-  private usersCollection = "users";
-  private campaignCollection = "campaign";
+  private usersCollection = process.env.USERS_COLLECTION || "usdt-users";
+  private campaignCollection = process.env.CAMPAIGN_COLLECTION || "usdt-campaign";
 
   async addUser(userData: Omit<User, "id" | "createdAt">): Promise<string> {
     try {
@@ -200,21 +200,21 @@ export class FirebaseService {
 
   async getCampaignInfo(): Promise<Campaign> {
     try {
-      const campaignRef = doc(db, this.campaignCollection, "main");
+      const campaignRef = doc(db, this.campaignCollection, "current");
       const campaignDoc = await getDoc(campaignRef);
 
       if (!campaignDoc.exists()) {
         // Create default campaign
         const defaultCampaign: Omit<Campaign, "id"> = {
-          maxUsers: 5,
+          maxUsers: 20,
           currentUsers: 0,
-          rewardAmount: "0.005",
+          rewardAmount: "1",
           isActive: true,
           createdAt: new Date(),
         };
 
         await setDoc(campaignRef, defaultCampaign);
-        return { id: "main", ...defaultCampaign };
+        return { id: "current", ...defaultCampaign };
       }
 
       return {
@@ -229,7 +229,7 @@ export class FirebaseService {
 
   async updateCampaignUsers(increment: number = 1): Promise<void> {
     try {
-      const campaignRef = doc(db, this.campaignCollection, "main");
+      const campaignRef = doc(db, this.campaignCollection, "current");
       const campaignDoc = await getDoc(campaignRef);
 
       if (campaignDoc.exists()) {

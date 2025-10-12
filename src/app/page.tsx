@@ -56,7 +56,7 @@ export default function Home() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("¡Tweet verificado y BNB enviado exitosamente!");
+        toast.success("¡Tweet verificado y USDT enviado exitosamente!");
         // Actualizar información de la campaña
         await fetchCampaignInfo();
         // Resetear formulario
@@ -130,10 +130,10 @@ export default function Home() {
                 />
                 <div>
                   <h1 className="text-xl font-bold text-white">
-                    Campaña BNB x Tokenizados
+                    Campaña USDT x Tokenizados
                   </h1>
                   <p className="text-sm text-green-200">
-                    Publica en X y gana 0.005 BNB
+                    Publica en X y gana 1 USDT
                   </p>
                 </div>
               </div>
@@ -155,11 +155,11 @@ export default function Home() {
               Bienvenido a la Campaña
             </h1>
             <h2 className="text-3xl md:text-4xl font-bold text-green-400 mb-8">
-              BNB x Tokenizados
+              USDT x Tokenizados
             </h2>
             <p className="text-xl text-green-200 mb-12 max-w-2xl mx-auto">
-              Publica en X sobre Tokenizados y gana 0.005 BNB. Solo para los
-              primeros 5 usuarios.
+              Publica en X sobre Tokenizados y gana 1 USDT. Solo para los
+              primeros 20 usuarios.
             </p>
           </div>
         </section>
@@ -285,7 +285,7 @@ export default function Home() {
               <span className="text-white font-semibold">Tokenizados</span>
             </div>
             <p className="text-green-200">
-              © 2025 Campaña BNB x Tokenizados. Desarrollado para promover{" "}
+              © 2025 Campaña USDT x Tokenizados. Desarrollado para promover{" "}
               <a
                 href="https://tokenizados.net"
                 target="_blank"
