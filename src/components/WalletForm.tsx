@@ -67,7 +67,7 @@ https://tokenizados.net/`;
           <Wallet className="w-8 h-8 text-green-400" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">
-          Participa y Gana 0.005 BNB
+          Participa y Gana 0.002 BNB
         </h2>
         <p className="text-green-200 text-sm">
           Solo para los primeros 5 usuarios

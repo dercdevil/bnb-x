@@ -208,7 +208,7 @@ export class FirebaseService {
         const defaultCampaign: Omit<Campaign, "id"> = {
           maxUsers: 5,
           currentUsers: 0,
-          rewardAmount: "0.005",
+          rewardAmount: "0.002",
           isActive: true,
           createdAt: new Date(),
         };

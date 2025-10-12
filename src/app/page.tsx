@@ -133,7 +133,7 @@ export default function Home() {
                     Campaña BNB x Tokenizados
                   </h1>
                   <p className="text-sm text-green-200">
-                    Publica en X y gana 0.005 BNB
+                    Publica en X y gana 0.002 BNB
                   </p>
                 </div>
               </div>
@@ -158,7 +158,7 @@ export default function Home() {
               BNB x Tokenizados
             </h2>
             <p className="text-xl text-green-200 mb-12 max-w-2xl mx-auto">
-              Publica en X sobre Tokenizados y gana 0.005 BNB. Solo para los
+              Publica en X sobre Tokenizados y gana 0.002 BNB. Solo para los
               primeros 5 usuarios.
             </p>
           </div>

@@ -13,14 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Campaña BNB x Tokenizados - Gana 0.005 BNB",
+  title: "Campaña BNB x Tokenizados - Gana 0.002 BNB",
   description:
-    "Publica en X sobre Tokenizados y gana 0.005 BNB. Solo para los primeros 5 usuarios. Participa ahora en nuestra campaña promocional.",
+    "Publica en X sobre Tokenizados y gana 0.002 BNB. Solo para los primeros 5 usuarios. Participa ahora en nuestra campaña promocional.",
   keywords:
     "BNB, Tokenizados, blockchain, Web3, campaña, recompensas, Twitter, X",
   openGraph: {
     title: "Campaña BNB x Tokenizados",
-    description: "Publica en X y gana 0.005 BNB - Solo 5 usuarios",
+    description: "Publica en X y gana 0.002 BNB - Solo 5 usuarios",
     url: "https://tokenizados.net",
     siteName: "Tokenizados",
     type: "website",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Campaña BNB x Tokenizados",
-    description: "Publica en X y gana 0.005 BNB - Solo 5 usuarios",
+    description: "Publica en X y gana 0.002 BNB - Solo 5 usuarios",
   },
 };
 
