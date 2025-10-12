@@ -17,7 +17,7 @@ export default function TweetPreview({
 
 Mi wallet: ${walletAddress}
 
-#Tokenización #Blockchain #Web3 #BNB
+#Tokenización #Blockchain #Web3 #USDT #BSC
 
 https://tokenizados.net/`;
 

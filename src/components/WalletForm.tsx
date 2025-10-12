@@ -42,7 +42,7 @@ export default function WalletForm({
 
 Mi wallet: ${wallet}
 
-#Tokenización #Blockchain #Web3 #BNB
+#Tokenización #Blockchain #Web3 #USDT #BSC
 
 https://tokenizados.net/`;
 
@@ -67,10 +67,10 @@ https://tokenizados.net/`;
           <Wallet className="w-8 h-8 text-green-400" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">
-          Participa y Gana 0.005 BNB
+          Participa y Gana 3 USDT
         </h2>
         <p className="text-green-200 text-sm">
-          Solo para los primeros 5 usuarios
+          Solo para los primeros 10 usuarios
         </p>
       </div>
 
@@ -80,7 +80,7 @@ https://tokenizados.net/`;
             htmlFor="wallet"
             className="block text-sm font-medium text-white mb-2"
           >
-            Dirección de Wallet BNB
+            Dirección de Wallet BSC
           </label>
           <input
             type="text"
@@ -129,7 +129,7 @@ https://tokenizados.net/`;
       <div className="mt-6 p-4 bg-green-500/10 backdrop-blur-sm rounded-lg border border-green-400/30">
         <h3 className="font-semibold text-green-300 mb-2">Instrucciones:</h3>
         <ol className="text-sm text-green-200 space-y-1">
-          <li>1. Ingresa tu dirección de wallet BNB</li>
+          <li>1. Ingresa tu dirección de wallet BSC</li>
           <li>2. Haz clic en &quot;Generar Tweet&quot;</li>
           <li>3. Publica el tweet en tu cuenta</li>
           <li>4. Copia la URL del tweet publicado</li>

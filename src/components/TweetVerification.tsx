@@ -127,7 +127,7 @@ export default function TweetVerification({
           ) : (
             <>
               <CheckCircle className="w-5 h-5" />
-              {isDisabled ? "Campaña Finalizada" : "Verificar y Reclamar BNB"}
+              {isDisabled ? "Campaña Finalizada" : "Verificar y Reclamar USDT"}
             </>
           )}
         </button>

@@ -14,8 +14,9 @@ import { db } from "@/lib/firebase";
 import { User, Campaign } from "@/types";
 
 export class FirebaseService {
-  private usersCollection = process.env.USERS_COLLECTION || "usdt-users";
-  private campaignCollection = process.env.CAMPAIGN_COLLECTION || "usdt-campaign";
+  // Defaults para campaña BNB (main), se sobrescriben con variables de entorno en USDT
+  private usersCollection = process.env.USERS_COLLECTION || "users";
+  private campaignCollection = process.env.CAMPAIGN_COLLECTION || "campaign";
 
   async addUser(userData: Omit<User, "id" | "createdAt">): Promise<string> {
     try {
@@ -200,21 +201,25 @@ export class FirebaseService {
 
   async getCampaignInfo(): Promise<Campaign> {
     try {
-      const campaignRef = doc(db, this.campaignCollection, "current");
+      // Usar "current" para USDT y "main" para BNB
+      const docId =
+        this.campaignCollection === "usdt-campaign" ? "current" : "main";
+      const campaignRef = doc(db, this.campaignCollection, docId);
       const campaignDoc = await getDoc(campaignRef);
 
       if (!campaignDoc.exists()) {
-        // Create default campaign
+        // Create default campaign (valores según la campaña)
+        const isUSDT = this.campaignCollection === "usdt-campaign";
         const defaultCampaign: Omit<Campaign, "id"> = {
-          maxUsers: 20,
+          maxUsers: isUSDT ? 10 : 5,
           currentUsers: 0,
-          rewardAmount: "1",
+          rewardAmount: isUSDT ? "3" : "0.005",
           isActive: true,
           createdAt: new Date(),
         };
 
         await setDoc(campaignRef, defaultCampaign);
-        return { id: "current", ...defaultCampaign };
+        return { id: docId, ...defaultCampaign };
       }
 
       return {
@@ -229,7 +234,10 @@ export class FirebaseService {
 
   async updateCampaignUsers(increment: number = 1): Promise<void> {
     try {
-      const campaignRef = doc(db, this.campaignCollection, "current");
+      // Usar "current" para USDT y "main" para BNB
+      const docId =
+        this.campaignCollection === "usdt-campaign" ? "current" : "main";
+      const campaignRef = doc(db, this.campaignCollection, docId);
       const campaignDoc = await getDoc(campaignRef);
 
       if (campaignDoc.exists()) {
